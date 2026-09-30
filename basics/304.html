@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Угадай число</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #4a76a8;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: #2c3e50;
+            border-radius: 10px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .subtitle {
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+        
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .attempts {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        
+        .hint {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #34495e;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .reset-btn {
+            background-color: #e74c3c;
+        }
+        
+        .reset-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .congratulations {
+            background-color: #27ae60;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Угадай число</h1>
+        <p class="subtitle">Попробуйте угадать число от 1 до 100</p>
+        
+        <div class="input-section">
+            <input type="number" id="guess-input" min="1" max="100" placeholder="Введите число">
+            <button id="guess-button">Угадать</button>
+        </div>
+        
+        <div class="attempts">Попытки: <span id="attempts-count">0</span></div>
+        
+        <div class="hint" id="hint">Начните игру, введя число!</div>
+        
+        <button id="reset-button" class="reset-btn">Сбросить игру</button>
+    </div>
+
+    <script>
+        // Генерация случайного числа от 1 до 100
+        let targetNumber = Math.floor(Math.random() * 100) + 1;
+        let attemptsCount = 0;
+        let attempts = [];
+        
+        // Получение элементов
+        const guessInput = document.getElementById('guess-input');
+        const guessButton = document.getElementById('guess-button');
+        const hint = document.getElementById('hint');
+        const resetButton = document.getElementById('reset-button');
+        const attemptsCountElement = document.getElementById('attempts-count');
+        
+        // Функция для обработки попытки
+        function handleGuess() {
+            const userGuess = parseInt(guessInput.value);
+            
+            // Проверка на корректность ввода
+            if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
+                hint.textContent = "Пожалуйста, введите число от 1 до 100!";
+                return;
+            }
+            
+            // Увеличиваем счетчик попыток
+            attemptsCount++;
+            attemptsCountElement.textContent = attemptsCount;
+            
+            // Сохраняем попытку
+            attempts.push(userGuess);
+            
+            // Проверка на угадывание
+            if (userGuess === targetNumber) {
+                hint.innerHTML = `<div class="congratulations">Поздравляю! Вы угадали число ${targetNumber}!</div>`;
+                guessButton.disabled = true;
+                guessInput.disabled = true;
+            } else if (userGuess < targetNumber) {
+                hint.textContent = "Загаданное число больше!";
+            } else {
+                hint.textContent = "Загаданное число меньше!";
+            }
+            
+            // Очистка поля ввода
+            guessInput.value = '';
+            guessInput.focus();
+        }
+        
+        // Функция для сброса игры
+        function resetGame() {
+            targetNumber = Math.floor(Math.random() * 100) + 1;
+            attemptsCount = 0;
+            attemptsCountElement.textContent = attemptsCount;
+            attempts = [];
+            hint.textContent = "Новая игра началась! Введите число.";
+            guessButton.disabled = false;
+            guessInput.disabled = false;
+            guessInput.focus();
+        }
+        
+        // Обработчики событий
+        guessButton.addEventListener('click', handleGuess);
+        
+        guessInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                handleGuess();
+            }
+        });
+        
+        resetButton.addEventListener('click', resetGame);
+        
+        guessInput.focus();
+    </script>
+</body>
+</html>

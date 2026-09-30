@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Генератор случайных чисел</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #b5e4f3;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            text-align: center;
+            background: rgb(255, 255, 255);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgb(49, 55, 227);
+        }
+
+        h1 {
+            color: #000;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+        
+        .number {
+            font-size: 60px;
+            font-weight: bold;
+            color: #cd1af1;
+            margin: 20px 0;
+        }
+
+        .generate-btn {
+            background-color: #b5e4f3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+
+        .generate-btn:hover {
+            background-color: #cd1af1;
+        }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        input {
+            padding: 8px;
+            margin: 0 5px;
+            width: 80px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        label {
+            font-weight: bold;
+            margin: 0 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Генератор случайных чисел</h1>
+        
+        <div class="controls">
+            <label>От: <input type="number" id="min" value="1"></label>
+            <label>До: <input type="number" id="max" value="100"></label>
+        </div>
+
+        <div class="number" id="randomNumber">0</div>
+        <button class="generate-btn" onclick="generateNumber()">Сгенерировать</button>
+    </div>
+
+    <script>
+        // Функция генерации случайного числа
+        function generateNumber() {
+            const min = parseInt(document.getElementById('min').value) || 1;
+            const max = parseInt(document.getElementById('max').value) || 100;
+            
+            // min <= max
+            const finalMin = Math.min(min, max);
+            const finalMax = Math.max(min, max);
+            
+            // Генерация случайного числа
+            const randomNumber = Math.floor(Math.random() * (finalMax - finalMin + 1)) + finalMin;
+            
+            // Отображение числа
+            document.getElementById('randomNumber').textContent = randomNumber;
+        }
+        
+        // Генерация числа при загрузке страницы
+        generateNumber();
+        
+        // Генерация числа при изменении полей ввода
+        document.getElementById('min').addEventListener('input', generateNumber);
+        document.getElementById('max').addEventListener('input', generateNumber);
+    </script>
+</body>
+</html>

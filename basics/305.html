@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Счетчик кликов</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #294b75;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            text-align: center;
+            background: rgba(114, 149, 187, 0.834);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(3, 10, 15, 0.404);
+        }
+
+        h1 {
+            color: #000;
+            margin-bottom: 30px;
+            font-size: 48px;
+        }
+        
+        .counter-value {
+            font-size: 48px;
+            font-weight: bold;
+            color: #16023c;
+            margin: 20px 0;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+        }
+
+       button {
+        padding: 10px, 20px;
+        font-size: 30px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-coloor 0.3s;
+       }
+
+       .increase-btn {
+        background-color: #294b75;
+        color: #ffffff;
+       }
+
+       .increase-btn:hover {
+        background-color: #16023c;
+       }
+
+       .decrease-btn {
+        background-color: #294b75;
+        color: #ffffff;
+       }
+
+       .decrease-btn:hover {
+        background-color: #16023c;
+       }
+
+       .reset-btn {
+        background-color: #294b75;
+        color: #ffffff;
+       }
+
+       .reset-btn:hover {
+        background-color: #16023c;
+       }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Счетчик кликов</h1>
+        <div class="counter-value" id="counter">0</div>
+        <div class="button-container">
+            <button class="increase-btn" id="increase">+</button>
+            <button class="decrease-btn" id="decrease">-</button>
+            <button class="reset-btn" id="reset">Сбросить</button>
+        </div>
+    </div>
+
+    <script>
+        const counterElement = document.getElementById("counter");
+        const increaseBtn = document.getElementById("increase");
+        const decreaseBtn = document.getElementById("decrease");
+        const resetBtn = document.getElementById("reset");
+
+        let count = localStorage.getItem('clickCount') || 0;
+        counterElement.textContent = count;
+
+
+        function updateCounter(value) {
+            count = value;
+            counterElement.textContent = count;
+            localStorage.setItem('clickCount', count);
+        }
+
+        increaseBtn.addEventListener('click', () => {
+            updateCounter(parseInt(count) + 1);
+        });
+
+        decreaseBtn.addEventListener('click', () => {
+            updateCounter(parseInt(count) - 1);
+        });
+
+        resetBtn.addEventListener('click', () => {
+            updateCounter(0);
+        });
+    </script>
+</body>
+</html>
