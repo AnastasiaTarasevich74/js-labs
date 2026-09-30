@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Секундомер</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #2c3e50;
+            font-family: Arial, sans-serif;
+        }
+        
+        .stopwatch {
+            background-color: #34495e;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            color: white;
+        }
+        
+        .display {
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #startStop {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        #startStop:hover {
+            background-color: #219955;
+        }
+        
+        #reset {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        #reset:hover {
+            background-color: #c0392b;
+        }
+        
+        #reset:disabled {
+            background-color: #7f8c8d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="stopwatch">
+        <div class="display">
+            <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>.<span id="milliseconds">00</span>
+        </div>
+        <div class="controls">
+            <button id="startStop">Старт</button>
+            <button id="reset" disabled>Обнулить</button>
+        </div>
+    </div>
+
+    <script>
+        // Элементы DOM
+        const hoursElement = document.getElementById('hours');
+        const minutesElement = document.getElementById('minutes');
+        const secondsElement = document.getElementById('seconds');
+        const millisecondsElement = document.getElementById('milliseconds');
+        const startStopButton = document.getElementById('startStop');
+        const resetButton = document.getElementById('reset');
+        
+        // Переменные секундомера
+        let startTime = 0;
+        let elapsedTime = 0;
+        let timerInterval = null;
+        let isRunning = false;
+        
+        // Форматирование времени
+        function formatTime(time) {
+            return time < 10 ? `0${time}` : time;
+        }
+        
+        // Обновление отображения
+        function updateDisplay() {
+            const currentTime = Date.now();
+            elapsedTime = currentTime - startTime;
+            
+            const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+            const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+            const milliseconds = Math.floor((elapsedTime % 1000) / 10);
+            
+            hoursElement.textContent = formatTime(hours);
+            minutesElement.textContent = formatTime(minutes);
+            secondsElement.textContent = formatTime(seconds);
+            millisecondsElement.textContent = formatTime(milliseconds);
+        }
+        
+        // Запуск секундомера
+        function startTimer() {
+            if (!isRunning) {
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(updateDisplay, 10);
+                isRunning = true;
+                startStopButton.textContent = 'Стоп';
+                resetButton.disabled = false;
+            }
+        }
+        
+        // Остановка секундомера
+        function stopTimer() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                startStopButton.textContent = 'Старт';
+            }
+        }
+        
+        // Сброс секундомера
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            elapsedTime = 0;
+            hoursElement.textContent = '00';
+            minutesElement.textContent = '00';
+            secondsElement.textContent = '00';
+            millisecondsElement.textContent = '00';
+            startStopButton.textContent = 'Старт';
+            resetButton.disabled = true;
+        }
+        
+        // Обработчики событий
+        startStopButton.addEventListener('click', function() {
+            if (isRunning) {
+                stopTimer();
+            } else {
+                startTimer();
+            }
+        });
+        
+        resetButton.addEventListener('click', resetTimer);
+    </script>
+</body>
+</html>

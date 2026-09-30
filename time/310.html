@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Часы для Омска</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+        }
+        
+        .clock-container {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .time {
+            font-size: 5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
+        }
+        
+        .date {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .timezone-selector {
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .timezone-selector:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .timezone-selector option {
+            background: #1a2a6c;
+            color: white;
+        }
+        
+        .location {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div class="time" id="time">00:00:00</div>
+        <div class="date" id="date">Загрузка...</div>
+        <select class="timezone-selector" id="timezone">
+            <option value="6">Омск (UTC+6)</option>
+            <option value="3">Москва (UTC+3)</option>
+            <option value="0">Лондон (UTC+0)</option>
+        </select>
+        <div class="location" id="location">Омское время</div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const timeElement = document.getElementById('time');
+            const dateElement = document.getElementById('date');
+            const timezoneSelector = document.getElementById('timezone');
+            const locationElement = document.getElementById('location');
+            
+            // Получаем текущее время в UTC
+            const now = new Date();
+            
+            // Получаем выбранный часовой пояс
+            const timezoneOffset = parseInt(timezoneSelector.value);
+            
+            // Применяем смещение часового пояса
+            const localTime = new Date(now.getTime() + (timezoneOffset * 60 + now.getTimezoneOffset()) * 60000);
+            
+            // Форматируем время
+            const hours = String(localTime.getHours()).padStart(2, '0');
+            const minutes = String(localTime.getMinutes()).padStart(2, '0');
+            const seconds = String(localTime.getSeconds()).padStart(2, '0');
+            
+            // Форматируем дату (текущую, а не фиксированную)
+            const daysOfWeek = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+            const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+            
+            const dayOfWeek = daysOfWeek[localTime.getDay()];
+            const day = localTime.getDate();
+            const month = months[localTime.getMonth()];
+            const year = localTime.getFullYear();
+            
+            // Обновляем элементы на странице
+            timeElement.textContent = `${hours}:${minutes}:${seconds}`;
+            dateElement.textContent = `${dayOfWeek}, ${day} ${month} ${year}`;
+            
+            // Обновляем название местоположения
+            const locations = {
+                6: "Омское время",
+                3: "Московское время",
+                0: "Лондонское время"
+            };
+            locationElement.textContent = locations[timezoneOffset];
+        }
+        
+        // Обновляем часы каждую секунду
+        setInterval(updateClock, 1000);
+        
+        // Инициализируем часы сразу
+        updateClock();
+        
+        // Обновляем часы при смене часового пояса
+        document.getElementById('timezone').addEventListener('change', updateClock);
+    </script>
+</body>
+</html>
