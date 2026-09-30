@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор паролей</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .password-container {
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .password-display {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            word-break: break-all;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .new-password-btn {
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .new-password-btn:hover {
+            background: linear-gradient(to right, #da1b60, #ff8a00);
+        }
+        
+        .requirements {
+            text-align: left;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+        }
+        
+        .requirements h3 {
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 20px;
+        }
+        
+        .requirements ul {
+            list-style-type: none;
+            padding-left: 10px;
+        } 
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Генератор паролей</h1>
+        
+        <div class="password-container">
+            <div class="password-display" id="password-display">Загрузка...</div>
+        </div>
+        
+        <button class="new-password-btn" id="new-password-btn">Сгенерировать новый пароль</button>
+    </div>
+
+    <script>
+        // Определение символов для генерации пароля
+        const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const specialChars = '@#$%^&*';
+        const allChars = lowercase + uppercase + specialChars;
+        
+        // Получение элементов
+        const passwordDisplay = document.getElementById('password-display');
+        const newPasswordBtn = document.getElementById('new-password-btn');
+        
+        // Функция для генерации пароля
+        function generatePassword() {
+            let password = '';
+            
+            // Гарантируем наличие хотя бы одного символа каждого типа
+            password += getRandomChar(lowercase);
+            password += getRandomChar(uppercase);
+            password += getRandomChar(specialChars);
+            
+            // Заполняем оставшиеся позиции случайными символами
+            for (let i = password.length; i < 8; i++) {
+                password += getRandomChar(allChars);
+            }
+            
+            // Перемешиваем пароль для случайного порядка символов
+            password = shuffleString(password);
+            
+            return password;
+        }
+        
+        // Функция для получения случайного символа из строки
+        function getRandomChar(charSet) {
+            const randomIndex = Math.floor(Math.random() * charSet.length);
+            return charSet[randomIndex];
+        }
+        
+        // Функция для перемешивания символов в строке
+        function shuffleString(str) {
+            const arr = str.split('');
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr.join('');
+        }
+        
+        // Функция для обновления отображения пароля
+        function updatePasswordDisplay() {
+            const password = generatePassword();
+            passwordDisplay.textContent = password;
+        }
+        
+        // Обработчики событий
+        newPasswordBtn.addEventListener('click', updatePasswordDisplay);
+        
+        // Инициализация при загрузке страницы
+        window.addEventListener('load', updatePasswordDisplay);
+    </script>
+</body>
+</html>

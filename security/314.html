@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Верификация PIN-кода</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .pin-container {
+            margin-bottom: 25px;
+        }
+        
+        .pin-field {
+            margin-bottom: 20px;
+        }
+        
+        .pin-label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .pin-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            text-align: center;
+            letter-spacing: 10px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .pin-input:focus {
+            border-color: #2575fc;
+            box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.2);
+        }
+        
+        .pin-input.valid {
+            border-color: #4CAF50;
+            background-color: rgba(76, 175, 80, 0.05);
+        }
+        
+        .pin-input.invalid {
+            border-color: #f44336;
+            background-color: rgba(244, 67, 54, 0.05);
+        }
+        
+        .status-message {
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .key {
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f1f3f4;
+            border-radius: 10px;
+            font-size: 22px;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            border: none;
+            outline: none;
+        }
+        
+        .key:hover {
+            background-color: #e1e5e9;
+        }
+        
+        .key:active {
+            transform: scale(0.95);
+            background-color: #d1d5db;
+        }
+        
+        .key.number {
+            background-color: #ffffff;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .key.function {
+            background-color: #2575fc;
+            color: white;
+        }
+        
+        .key.clear {
+            background-color: #ff6b6b;
+            color: white;
+        }
+        
+        .key.submit {
+            background-color: #4CAF50;
+            color: white;
+            grid-column: span 2;
+        }
+        
+        .key.zero {
+            grid-column: 2;
+        }
+        
+        .key.backspace {
+            font-size: 18px;
+        }
+        
+        .instructions {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #2575fc;
+            text-align: left;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 5px;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PIN-код</h1>
+        <p class="subtitle">Введите 6-значный PIN-код в оба поля для подтверждения</p>
+        
+        <div class="pin-container">
+            <div class="pin-field">
+                <label class="pin-label">Поле 1: Введите PIN-код</label>
+                <input type="password" class="pin-input" id="pin1" maxlength="6" readonly placeholder="••••••">
+            </div>
+            
+            <div class="pin-field">
+                <label class="pin-label">Поле 2: Повторите PIN-код</label>
+                <input type="password" class="pin-input" id="pin2" maxlength="6" readonly placeholder="••••••">
+            </div>
+            
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+        
+        <div class="keyboard">
+            <button class="key number" data-key="1">1</button>
+            <button class="key number" data-key="2">2</button>
+            <button class="key number" data-key="3">3</button>
+            <button class="key number" data-key="4">4</button>
+            <button class="key number" data-key="5">5</button>
+            <button class="key number" data-key="6">6</button>
+            <button class="key number" data-key="7">7</button>
+            <button class="key number" data-key="8">8</button>
+            <button class="key number" data-key="9">9</button>
+            <button class="key clear" id="clearBtn">Очистить</button>
+            <button class="key number zero" data-key="0">0</button>
+            <button class="key function backspace" id="backspaceBtn">⌫</button>
+            <button class="key submit" id="submitBtn">Подтвердить</button>
+        </div>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Элементы DOM
+            const pin1Input = document.getElementById('pin1');
+            const pin2Input = document.getElementById('pin2');
+            const statusMessage = document.getElementById('statusMessage');
+            const clearBtn = document.getElementById('clearBtn');
+            const backspaceBtn = document.getElementById('backspaceBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            const numberKeys = document.querySelectorAll('.key.number');
+            
+            // Текущее активное поле ввода
+            let activeInput = pin1Input;
+            
+            // Подсветка активного поля
+            function updateActiveInput() {
+                pin1Input.classList.remove('active');
+                pin2Input.classList.remove('active');
+                activeInput.classList.add('active');
+            }
+            
+            // Инициализация
+            updateActiveInput();
+            
+            // Обработка кликов по полям ввода
+            pin1Input.addEventListener('click', () => {
+                activeInput = pin1Input;
+                updateActiveInput();
+            });
+            
+            pin2Input.addEventListener('click', () => {
+                activeInput = pin2Input;
+                updateActiveInput();
+            });
+            
+            // Добавление цифры в активное поле
+            function addDigit(digit) {
+                if (activeInput.value.length < 6) {
+                    activeInput.value += digit;
+                    validateInputs();
+                }
+                
+                // Автоматическое переключение на второе поле
+                if (activeInput === pin1Input && pin1Input.value.length === 6) {
+                    activeInput = pin2Input;
+                    updateActiveInput();
+                }
+            }
+            
+            // Удаление последней цифры
+            function backspace() {
+                if (activeInput.value.length > 0) {
+                    activeInput.value = activeInput.value.slice(0, -1);
+                    validateInputs();
+                }
+            }
+            
+            // Очистка всех полей
+            function clearAll() {
+                pin1Input.value = '';
+                pin2Input.value = '';
+                activeInput = pin1Input;
+                updateActiveInput();
+                validateInputs();
+                hideStatusMessage();
+            }
+            
+            // Проверка валидности введенных данных
+            function validateInputs() {
+                const pin1 = pin1Input.value;
+                const pin2 = pin2Input.value;
+                
+                // Сброс стилей
+                pin1Input.classList.remove('valid', 'invalid');
+                pin2Input.classList.remove('valid', 'invalid');
+                
+                // Проверка длины PIN-кодов
+                const pin1Valid = pin1.length === 6;
+                const pin2Valid = pin2.length === 6;
+                
+                if (pin1Valid) {
+                    pin1Input.classList.add('valid');
+                }
+                
+                if (pin2Valid) {
+                    pin2Input.classList.add('valid');
+                }
+                
+                // Проверка совпадения PIN-кодов
+                if (pin1Valid && pin2Valid) {
+                    if (pin1 === pin2) {
+                        pin2Input.classList.add('valid');
+                        pin2Input.classList.remove('invalid');
+                        return true;
+                    } else {
+                        pin2Input.classList.add('invalid');
+                        pin2Input.classList.remove('valid');
+                        return false;
+                    }
+                }
+                
+                return false;
+            }
+            
+            // Отображение статуса
+            function showStatusMessage(message, isSuccess) {
+                statusMessage.textContent = message;
+                statusMessage.className = 'status-message';
+                statusMessage.classList.add(isSuccess ? 'status-success' : 'status-error');
+            }
+            
+            // Скрытие сообщения о статусе
+            function hideStatusMessage() {
+                statusMessage.className = 'status-message';
+            }
+            
+            // Обработка отправки формы
+            function submitForm() {
+                const pin1 = pin1Input.value;
+                const pin2 = pin2Input.value;
+                
+                if (pin1.length !== 6 || pin2.length !== 6) {
+                    showStatusMessage('Ошибка: Оба PIN-кода должны содержать 6 цифр', false);
+                    return;
+                }
+                
+                if (pin1 !== pin2) {
+                    showStatusMessage('Ошибка: PIN-коды не совпадают', false);
+                    return;
+                }
+                
+                showStatusMessage('Успех: PIN-коды совпадают', true);
+                
+                // Блокировка полей ввода после успешной проверки
+                pin1Input.classList.add('valid');
+                pin2Input.classList.add('valid');
+            }
+            
+            // Назначение обработчиков событий для цифровых клавиш
+            numberKeys.forEach(key => {
+                key.addEventListener('click', () => {
+                    addDigit(key.getAttribute('data-key'));
+                });
+            });
+            
+            // Назначение обработчиков для функциональных кнопок
+            clearBtn.addEventListener('click', clearAll);
+            backspaceBtn.addEventListener('click', backspace);
+            submitBtn.addEventListener('click', submitForm);
+            
+            // Обработка нажатий клавиш на физической клавиатуре
+            document.addEventListener('keydown', function(event) {
+                // Игнорируем ввод с физической клавиатуры, так как по условиям задания
+                // ввод должен осуществляться только с экранной клавиатуры
+                // Но оставим обработку Backspace и Escape для удобства
+                
+                if (event.key === 'Backspace') {
+                    backspace();
+                    event.preventDefault();
+                } else if (event.key === 'Escape') {
+                    clearAll();
+                    event.preventDefault();
+                } else if (event.key === 'Enter') {
+                    submitForm();
+                    event.preventDefault();
+                }
+            });
+            
+            // Инициализация проверки
+            validateInputs();
+        });
+    </script>
+</body>
+</html>

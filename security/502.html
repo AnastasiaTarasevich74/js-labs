@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка надежности пароля</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            border-color: #4a90e2;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+        
+        .requirements {
+            margin-top: 25px;
+        }
+        
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .requirement-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .requirement.valid .requirement-icon {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .requirement.invalid .requirement-icon {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .strength-meter {
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .strength-bar {
+            height: 100%;
+            width: 0;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .strength-text {
+            text-align: center;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .strength-weak {
+            color: #f44336;
+        }
+        
+        .strength-medium {
+            color: #ff9800;
+        }
+        
+        .strength-strong {
+            color: #4CAF50;
+        }
+        
+        .strength-very-strong {
+            color: #2196F3;
+        }
+        
+        .strength-excellent {
+            color: #009688;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Проверка надежности пароля</h1>
+        
+        <div class="input-group">
+            <label for="password">Введите пароль:</label>
+            <input type="text" id="password" placeholder="Введите пароль для проверки">
+        </div>
+        
+        <div class="strength-meter">
+            <div class="strength-bar" id="strength-bar"></div>
+        </div>
+        
+        <div class="strength-text" id="strength-text">Введите пароль для проверки</div>
+        
+        <div class="requirements">
+            <div class="requirement" id="length">
+                <div class="requirement-icon">!</div>
+                <span>Минимум 8 символов</span>
+            </div>
+            <div class="requirement" id="lowercase">
+                <div class="requirement-icon">!</div>
+                <span>Строчные буквы (a-z)</span>
+            </div>
+            <div class="requirement" id="uppercase">
+                <div class="requirement-icon">!</div>
+                <span>Заглавные буквы (A-Z)</span>
+            </div>
+            <div class="requirement" id="numbers">
+                <div class="requirement-icon">!</div>
+                <span>Цифры (0-9)</span>
+            </div>
+            <div class="requirement" id="special">
+                <div class="requirement-icon">!</div>
+                <span>Специальные символы (!@#$%^&*)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('password');
+            const strengthBar = document.getElementById('strength-bar');
+            const strengthText = document.getElementById('strength-text');
+            
+            const requirements = {
+                length: document.getElementById('length'),
+                lowercase: document.getElementById('lowercase'),
+                uppercase: document.getElementById('uppercase'),
+                numbers: document.getElementById('numbers'),
+                special: document.getElementById('special')
+            };
+            
+            passwordInput.addEventListener('input', function() {
+                const password = passwordInput.value;
+                checkPasswordStrength(password);
+            });
+            
+            function checkPasswordStrength(password) {
+                // Проверяем каждое требование
+                const hasLength = password.length >= 8;
+                const hasLowercase = /[a-z]/.test(password);
+                const hasUppercase = /[A-Z]/.test(password);
+                const hasNumbers = /[0-9]/.test(password);
+                const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+                
+                // Обновляем отображение требований
+                updateRequirement(requirements.length, hasLength);
+                updateRequirement(requirements.lowercase, hasLowercase);
+                updateRequirement(requirements.uppercase, hasUppercase);
+                updateRequirement(requirements.numbers, hasNumbers);
+                updateRequirement(requirements.special, hasSpecial);
+                
+                // Вычисляем силу пароля
+                let strength = 0;
+                let strengthLevel = '';
+                let barColor = '';
+                
+                // Каждое выполненное требование добавляет 20% к силе
+                if (hasLength) strength += 20;
+                if (hasLowercase) strength += 20;
+                if (hasUppercase) strength += 20;
+                if (hasNumbers) strength += 20;
+                if (hasSpecial) strength += 20;
+                
+                // Определяем уровень надежности
+                if (strength === 0) {
+                    strengthLevel = 'Введите пароль';
+                    barColor = '#ddd';
+                } else if (strength <= 20) {
+                    strengthLevel = 'Очень слабый';
+                    barColor = '#f44336';
+                } else if (strength <= 40) {
+                    strengthLevel = 'Слабый';
+                    barColor = '#ff9800';
+                } else if (strength <= 60) {
+                    strengthLevel = 'Средний';
+                    barColor = '#ffc107';
+                } else if (strength <= 80) {
+                    strengthLevel = 'Надежный';
+                    barColor = '#4CAF50';
+                } else {
+                    strengthLevel = 'Очень надежный';
+                    barColor = '#2196F3';
+                }
+                
+                // Обновляем отображение силы пароля
+                strengthBar.style.width = strength + '%';
+                strengthBar.style.backgroundColor = barColor;
+                strengthText.textContent = strengthLevel;
+                
+                // Устанавливаем класс для цвета текста
+                strengthText.className = 'strength-text';
+                if (strength <= 20) {
+                    strengthText.classList.add('strength-weak');
+                } else if (strength <= 40) {
+                    strengthText.classList.add('strength-medium');
+                } else if (strength <= 60) {
+                    strengthText.classList.add('strength-strong');
+                } else if (strength <= 80) {
+                    strengthText.classList.add('strength-very-strong');
+                } else {
+                    strengthText.classList.add('strength-excellent');
+                }
+            }
+            
+            function updateRequirement(element, isValid) {
+                if (isValid) {
+                    element.classList.add('valid');
+                    element.classList.remove('invalid');
+                } else {
+                    element.classList.add('invalid');
+                    element.classList.remove('valid');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
