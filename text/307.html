@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторная работа 7: Печатная машинка</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-area, .output-area {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            font-family: monospace;
+        }
+        
+        .output {
+            min-height: 100px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            font-family: monospace;
+            white-space: pre-wrap;
+            position: relative;
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: #333;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        #startBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        #startBtn:hover {
+            background-color: #45a049;
+        }
+        
+        #stopBtn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        #stopBtn:hover {
+            background-color: #d32f2f;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>"Печатная машинка"</h1>
+        
+        <div class="input-area">
+            <label for="inputText">Введите текст:</label>
+            <textarea id="inputText" placeholder="Введите текст для анимации..."></textarea>
+        </div>
+        
+        <div class="buttons">
+            <button id="startBtn">Старт</button>
+            <button id="stopBtn" disabled>Стоп</button>
+        </div>
+        
+        <div class="output-area">
+            <label>Результат:</label>
+            <div id="output" class="output"></div>
+        </div>
+    </div>
+
+    <script>
+        // Получаем элементы DOM
+        const inputText = document.getElementById('inputText');
+        const output = document.getElementById('output');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        
+        // Переменные для управления анимацией
+        let animationId = null;
+        let currentIndex = 0;
+        let isAnimating = false;
+        let textToAnimate = '';
+        
+        // Функция для отрисовки анимации
+        function draw() {
+            // Если достигли конца текста, останавливаем анимацию
+            if (currentIndex >= textToAnimate.length) {
+                stopAnimation();
+                return;
+            }
+            
+            // Добавляем следующий символ к выводу
+            output.innerHTML = textToAnimate.substring(0, currentIndex + 1) + '<span class="cursor"></span>';
+            
+            // Увеличиваем индекс для следующего символа
+            currentIndex++;
+            
+            // Следующий кадр анимации
+            animationId = setTimeout(draw, 100); // Интервал 100 мс
+        }
+        
+        // Функция запуска анимации
+        function startAnimation() {
+            if (isAnimating) return;
+            
+            // Получаем текст для анимации
+            textToAnimate = inputText.value;
+            
+            // Если текст пустой, ничего не делаем
+            if (!textToAnimate.trim()) {
+                alert('Введите текст для анимации!');
+                return;
+            }
+            
+            // Сбрасываем состояние анимации
+            currentIndex = 0;
+            isAnimating = true;
+            
+            // Обновляем состояние кнопок
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            
+            // Очищаем область вывода
+            output.innerHTML = '<span class="cursor"></span>';
+            
+            // Запускаем анимацию
+            draw();
+        }
+        
+        // Функция остановки анимации
+        function stopAnimation() {
+            if (!isAnimating) return;
+            
+            // Останавливаем анимацию
+            clearTimeout(animationId);
+            isAnimating = false;
+            
+            // Обновляем состояние кнопок
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            
+            // Убираем курсор, если анимация завершена
+            if (currentIndex >= textToAnimate.length) {
+                output.innerHTML = textToAnimate;
+            } else {
+                output.innerHTML = textToAnimate.substring(0, currentIndex) + '<span class="cursor"></span>';
+            }
+        }
+        
+        // Назначаем обработчики событий
+        startBtn.addEventListener('click', startAnimation);
+        stopBtn.addEventListener('click', stopAnimation);
+        
+        // Обработчик для клавиши Enter в поле ввода
+        inputText.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && event.ctrlKey) {
+                startAnimation();
+            }
+        });
+    </script>
+</body>
+</html>
