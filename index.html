@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>js-labs · Портфолио</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(145deg, #f0f4fa 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+            color: #1e293b;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+        h1 {
+            font-size: 2.4rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #0f2b3d, #1e4a76);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            color: #475569;
+            font-size: 1.05rem;
+            margin-bottom: 40px;
+            border-left: 4px solid #3b82f6;
+            padding-left: 14px;
+        }
+        h2 {
+            margin: 35px 0 18px;
+            font-size: 1.4rem;
+            color: #0f172a;
+            border-bottom: 2px solid #cbd5e1;
+            padding-bottom: 8px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            text-decoration: none;
+            color: #0f172a;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transition: 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+            border-color: #3b82f6;
+        }
+        .card .emoji { font-size: 1.8rem; display: block; margin-bottom: 8px; }
+        .card .title { font-weight: 600; font-size: 1.05rem; margin-bottom: 4px; }
+        .card .desc { font-size: 0.85rem; color: #64748b; }
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+        footer a { color: #3b82f6; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Учебные проекты · js-labs</h1>
+    <p class="subtitle">18 работ на чистом JavaScript: калькуляторы, таймеры, счётчики, валидация, анимации.</p>
+
+    <h2>🧩 Базовое</h2>
+    <div class="grid">
+        <a class="card" href="basics/303.html"><span class="emoji">🎲</span><div class="title">Генератор чисел</div><div class="desc">Math.random, input</div></a>
+        <a class="card" href="basics/304.html"><span class="emoji">🎯</span><div class="title">Угадай число</div><div class="desc">Игровая логика, счётчик</div></a>
+        <a class="card" href="basics/305.html"><span class="emoji">🔢</span><div class="title">Счётчик кликов</div><div class="desc">localStorage</div></a>
+        <a class="card" href="basics/306.html"><span class="emoji">⭕</span><div class="title">Круг с анимациями</div><div class="desc">CSS keyframes</div></a>
+    </div>
+
+    <h2>📝 Текст</h2>
+    <div class="grid">
+        <a class="card" href="text/307.html"><span class="emoji">⌨️</span><div class="title">Печатная машинка</div><div class="desc">Анимация текста</div></a>
+        <a class="card" href="text/308.html"><span class="emoji">📊</span><div class="title">Счётчик символов</div><div class="desc">Регулярные выражения</div></a>
+    </div>
+
+    <h2>⏱ Время</h2>
+    <div class="grid">
+        <a class="card" href="time/310.html"><span class="emoji">🕐</span><div class="title">Часы для Омска</div><div class="desc">Часовые пояса</div></a>
+        <a class="card" href="time/311.html"><span class="emoji">⏲️</span><div class="title">Секундомер</div><div class="desc">Миллисекунды</div></a>
+        <a class="card" href="time/408.html"><span class="emoji">⏳</span><div class="title">Таймер обратного отсчёта</div><div class="desc">AudioContext, звук</div></a>
+    </div>
+
+    <h2>🎮 Игры</h2>
+    <div class="grid">
+        <a class="card" href="games/313.html"><span class="emoji">🐂</span><div class="title">Быки и коровы</div><div class="desc">История попыток</div></a>
+        <a class="card" href="games/404.html"><span class="emoji">🐱</span><div class="title">Крестики-нолики 5×5</div><div class="desc">Проверка победы</div></a>
+    </div>
+
+    <h2>🔐 Безопасность</h2>
+    <div class="grid">
+        <a class="card" href="security/314.html"><span class="emoji">🔢</span><div class="title">PIN-код</div><div class="desc">Экранная клавиатура, валидация</div></a>
+        <a class="card" href="security/402.html"><span class="emoji">🔑</span><div class="title">Генератор паролей</div><div class="desc">Криптостойкая генерация</div></a>
+        <a class="card" href="security/502.html"><span class="emoji">🛡️</span><div class="title">Проверка пароля</div><div class="desc">Strength meter</div></a>
+    </div>
+
+    <h2>🧮 Калькуляторы</h2>
+    <div class="grid">
+        <a class="card" href="calculators/407.html"><span class="emoji">➗</span><div class="title">Простой калькулятор</div><div class="desc">eval, клавиатура</div></a>
+        <a class="card" href="calculators/504.html"><span class="emoji">🧮</span><div class="title">Научный калькулятор</div><div class="desc">sin/cos/tan, π, e, корень n-й степени</div></a>
+    </div>
+
+    <h2>⌨️ Клавиатура</h2>
+    <div class="grid">
+        <a class="card" href="keyboard/503.html"><span class="emoji">⌨️</span><div class="title">Виртуальная русская клавиатура</div><div class="desc">Смена раскладок</div></a>
+    </div>
+
+    <h2>✨ Анимации</h2>
+    <div class="grid">
+        <a class="card" href="animations/315.html"><span class="emoji">🎄</span><div class="title">Рождественская гирлянда</div><div class="desc">CSS-анимации, снежинки</div></a>
+    </div>
+
+    <footer>
+        Сделано на чистом JavaScript · <a href="https://github.com/anastasiatarasevich74">GitHub</a>
+    </footer>
+</div>
+</body>
+</html>
