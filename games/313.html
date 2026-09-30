@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Быки и коровы</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .rules-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .rules-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .input-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .number-input {
+            width: 200px;
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .guess-btn {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .guess-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .guess-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .history {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .history th {
+            background-color: #34495e;
+            color: white;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .history td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .history tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .history tr:hover {
+            background-color: #ecf0f1;
+        }
+        
+        .bulls {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .cows {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        
+        .result {
+            font-size: 20px;
+            text-align: center;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .win {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .rules-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .rules-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .close-btn:hover {
+            color: #e74c3c;
+        }
+        
+        .rules-content h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .rules-content ul {
+            line-height: 1.6;
+            padding-left: 20px;
+        }
+        
+        .rules-content li {
+            margin-bottom: 10px;
+        }
+        
+        .restart-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        .restart-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .attempts-counter {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .input-section {
+                flex-direction: column;
+            }
+            
+            .number-input, .guess-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Быки и Коровы</h1>
+        
+        <button class="rules-btn" id="rulesBtn">Правила игры</button>
+        
+        <div class="game-area">
+            <div class="attempts-counter" id="attemptsCounter">Попытки: 0</div>
+            
+            <div class="input-section">
+                <input type="number" class="number-input" id="numberInput" min="1000" max="9999" placeholder="Введите число">
+                <button class="guess-btn" id="guessBtn">Проверить</button>
+            </div>
+            
+            <button class="restart-btn" id="restartBtn">Новая игра</button>
+            
+            <div class="result" id="resultMessage"></div>
+            
+            <table class="history" id="historyTable">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Ваше число</th>
+                        <th>Быки</th>
+                        <th>Коровы</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="rules-modal" id="rulesModal">
+        <div class="rules-content">
+            <span class="close-btn" id="closeRules">&times;</span>
+            <h2>Правила игры "Быки и Коровы"</h2>
+            <ul>
+                <li>Компьютер загадывает 4-значное число, все цифры которого различны (первая цифра числа отлична от нуля).</li>
+                <li>Ваша задача - угадать это число за минимальное количество попыток.</li>
+                <li>В каждой попытке вы вводите своё 4-значное число (также без повторяющихся цифр).</li>
+                <li>После каждой попытки компьютер сообщает, сколько "быков" и сколько "коров" вы угадали.</li>
+                <li><span class="bulls">Бык</span> - цифра есть в загаданном числе и стоит на правильной позиции.</li>
+                <li><span class="cows">Корова</span> - цифра есть в загаданном числе, но стоит на неправильной позиции.</li>
+                <li>Пример: загаданное число 1234, а вы назвали 1342. Результат: 1 бык (цифра 1 на своей позиции) и 3 коровы (цифры 2, 3, 4 есть в числе, но не на своих местах).</li>
+                <li>Игра продолжается до тех пор, пока вы не угадаете число (не получите 4 быков).</li>
+                <li>Удачи!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Глобальные переменные
+        let secretNumber = '';
+        let attempts = 0;
+        let gameOver = false;
+        
+        // DOM элементы
+        const numberInput = document.getElementById('numberInput');
+        const guessBtn = document.getElementById('guessBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const historyBody = document.getElementById('historyBody');
+        const attemptsCounter = document.getElementById('attemptsCounter');
+        const resultMessage = document.getElementById('resultMessage');
+        const rulesBtn = document.getElementById('rulesBtn');
+        const rulesModal = document.getElementById('rulesModal');
+        const closeRules = document.getElementById('closeRules');
+        
+        // Генерация случайного числа без повторяющихся цифр
+        function generateSecretNumber() {
+            let digits = [];
+            
+            // Первая цифра не может быть 0
+            let firstDigit = Math.floor(Math.random() * 9) + 1;
+            digits.push(firstDigit);
+            
+            // Добавляем остальные цифры, избегая повторов
+            while (digits.length < 4) {
+                let digit = Math.floor(Math.random() * 10);
+                if (!digits.includes(digit)) {
+                    digits.push(digit);
+                }
+            }
+            
+            return digits.join('');
+        }
+        
+        // Проверка введенного числа на корректность
+        function validateInput(input) {
+            // Проверка на 4-значное число
+            if (input.length !== 4) {
+                return {valid: false, message: "Число должно быть 4-значным"};
+            }
+            
+            // Проверка, что это число
+            if (isNaN(input)) {
+                return {valid: false, message: "Введите число"};
+            }
+            
+            // Проверка, что первая цифра не 0
+            if (input[0] === '0') {
+                return {valid: false, message: "Первая цифра не может быть 0"};
+            }
+            
+            // Проверка на повторяющиеся цифры
+            const digits = input.split('');
+            const uniqueDigits = [...new Set(digits)];
+            if (uniqueDigits.length !== 4) {
+                return {valid: false, message: "Цифры не должны повторяться"};
+            }
+            
+            return {valid: true, message: ""};
+        }
+        
+        // Подсчет быков и коров
+        function calculateBullsAndCows(guess) {
+            let bulls = 0;
+            let cows = 0;
+            
+            for (let i = 0; i < 4; i++) {
+                if (guess[i] === secretNumber[i]) {
+                    bulls++;
+                } else if (secretNumber.includes(guess[i])) {
+                    cows++;
+                }
+            }
+            
+            return {bulls, cows};
+        }
+        
+        // Обработка попытки угадать
+        function processGuess() {
+            if (gameOver) return;
+            
+            const guess = numberInput.value;
+            const validation = validateInput(guess);
+            
+            if (!validation.valid) {
+                alert(validation.message);
+                return;
+            }
+            
+            // Увеличиваем счетчик попыток
+            attempts++;
+            attemptsCounter.textContent = `Попытки: ${attempts}`;
+            
+            // Подсчитываем быков и коров
+            const {bulls, cows} = calculateBullsAndCows(guess);
+            
+            // Добавляем запись в историю
+            addHistoryRow(attempts, guess, bulls, cows);
+            
+            // Проверяем, выиграл ли игрок
+            if (bulls === 4) {
+                endGame(true);
+            }
+            
+            // Очищаем поле ввода
+            numberInput.value = '';
+            numberInput.focus();
+        }
+        
+        // Добавление строки в историю попыток
+        function addHistoryRow(attemptNum, guess, bulls, cows) {
+            const row = document.createElement('tr');
+            
+            // Номер попытки
+            const attemptCell = document.createElement('td');
+            attemptCell.textContent = attemptNum;
+            row.appendChild(attemptCell);
+            
+            // Введенное число
+            const guessCell = document.createElement('td');
+            guessCell.textContent = guess;
+            row.appendChild(guessCell);
+            
+            // Быки
+            const bullsCell = document.createElement('td');
+            bullsCell.innerHTML = `<span class="bulls">${bulls} бык(ов)</span>`;
+            row.appendChild(bullsCell);
+            
+            // Коровы
+            const cowsCell = document.createElement('td');
+            cowsCell.innerHTML = `<span class="cows">${cows} коров(ы)</span>`;
+            row.appendChild(cowsCell);
+            
+            // Добавляем строку в таблицу
+            historyBody.prepend(row);
+        }
+        
+        // Завершение игры
+        function endGame(isWin) {
+            gameOver = true;
+            guessBtn.disabled = true;
+            numberInput.disabled = true;
+            
+            if (isWin) {
+                resultMessage.textContent = `Поздравляем! Вы угадали число ${secretNumber} за ${attempts} попыток!`;
+                resultMessage.className = 'result win';
+            }
+        }
+        
+        // Начало новой игры
+        function startNewGame() {
+            // Генерируем новое число
+            secretNumber = generateSecretNumber();
+            console.log(`Загаданное число: ${secretNumber}`); // Для отладки
+            
+            // Сбрасываем счетчики
+            attempts = 0;
+            gameOver = false;
+            attemptsCounter.textContent = `Попытки: ${attempts}`;
+            
+            // Очищаем историю
+            historyBody.innerHTML = '';
+            
+            // Очищаем сообщение о результате
+            resultMessage.textContent = '';
+            resultMessage.className = 'result';
+            
+            // Активируем элементы ввода
+            guessBtn.disabled = false;
+            numberInput.disabled = false;
+            numberInput.value = '';
+            numberInput.focus();
+        }
+        
+        // Показать правила игры
+        function showRules() {
+            rulesModal.style.display = 'flex';
+        }
+        
+        // Скрыть правила игры
+        function hideRules() {
+            rulesModal.style.display = 'none';
+        }
+        
+        // Инициализация игры
+        function init() {
+            // Начинаем новую игру
+            startNewGame();
+            
+            // Назначаем обработчики событий
+            guessBtn.addEventListener('click', processGuess);
+            
+            restartBtn.addEventListener('click', startNewGame);
+            
+            rulesBtn.addEventListener('click', showRules);
+            
+            closeRules.addEventListener('click', hideRules);
+            
+            // Закрытие модального окна при клике вне его
+            rulesModal.addEventListener('click', function(event) {
+                if (event.target === rulesModal) {
+                    hideRules();
+                }
+            });
+            
+            // Обработка нажатия Enter в поле ввода
+            numberInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    processGuess();
+                }
+            });
+        }
+        
+        // Запуск игры при загрузке страницы
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

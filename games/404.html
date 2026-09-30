@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Крестики-нолики: Котики vs Собачки</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #333;
+        }
+        
+        .game-info {
+            margin-bottom: 20px;
+        }
+        
+        .score-board {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+        
+        .score {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 5px;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .cell:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .cat::before {
+            content: "🐱";
+        }
+        
+        .dog::before {
+            content: "🐶";
+        }
+        
+        .controls {
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Котики-Собачки</h1>
+    
+    <div class="game-info">
+        <p>Текущий раунд: <span id="round">1</span></p>
+        <p>Сейчас ходит: <span id="current-player">🐱</span></p>
+    </div>
+    
+    <div class="score-board">
+        <div class="score">Котики: <span id="cat-score">0</span></div>
+        <div class="score">Собачки: <span id="dog-score">0</span></div>
+    </div>
+    
+    <div class="game-board" id="board"></div>
+    
+    <div class="controls">
+        <button id="reset">Новая игра</button>
+    </div>
+
+    <script>
+        // Игровые переменные
+        let currentPlayer = 'cat'; // Котики ходят первыми
+        let gameBoard = Array(5).fill().map(() => Array(5).fill(''));
+        let gameActive = true;
+        let round = 1;
+        let catScore = 0;
+        let dogScore = 0;
+        
+        // Элементы DOM
+        const boardElement = document.getElementById('board');
+        const roundElement = document.getElementById('round');
+        const currentPlayerElement = document.getElementById('current-player');
+        const catScoreElement = document.getElementById('cat-score');
+        const dogScoreElement = document.getElementById('dog-score');
+        const resetButton = document.getElementById('reset');
+        
+        // Инициализация игрового поля
+        function initializeBoard() {
+            boardElement.innerHTML = '';
+            
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 5; j++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.addEventListener('click', handleCellClick);
+                    boardElement.appendChild(cell);
+                }
+            }
+        }
+        
+        // Обработка клика по ячейке
+        function handleCellClick(event) {
+            if (!gameActive) return;
+            
+            const row = parseInt(event.target.dataset.row);
+            const col = parseInt(event.target.dataset.col);
+            
+            // Проверка, что ячейка пустая
+            if (gameBoard[row][col] !== '') return;
+            
+            // Заполнение ячейки
+            gameBoard[row][col] = currentPlayer;
+            event.target.classList.add(currentPlayer);
+            
+            // Проверка победы
+            if (checkWin(row, col)) {
+                gameActive = false;
+                setTimeout(() => {
+                    alert(`${currentPlayer === 'cat' ? 'Котики' : 'Собачки'} победили в раунде ${round}!`);
+                    updateScore();
+                    startNewRound();
+                }, 100);
+                return;
+            }
+            
+            // Проверка ничьей
+            if (checkDraw()) {
+                gameActive = false;
+                setTimeout(() => {
+                    alert(`Ничья в раунде ${round}!`);
+                    startNewRound();
+                }, 100);
+                return;
+            }
+            
+            // Смена игрока
+            currentPlayer = currentPlayer === 'cat' ? 'dog' : 'cat';
+            currentPlayerElement.textContent = currentPlayer === 'cat' ? '🐱' : '🐶';
+        }
+        
+        // Проверка победы
+        function checkWin(row, col) {
+            const player = gameBoard[row][col];
+            
+            // Проверка горизонтали
+            for (let i = 0; i <= 2; i++) {
+                if (
+                    col - i >= 0 && 
+                    col - i + 2 < 5 &&
+                    gameBoard[row][col - i] === player &&
+                    gameBoard[row][col - i + 1] === player &&
+                    gameBoard[row][col - i + 2] === player
+                ) {
+                    return true;
+                }
+            }
+            
+            // Проверка вертикали
+            for (let i = 0; i <= 2; i++) {
+                if (
+                    row - i >= 0 && 
+                    row - i + 2 < 5 &&
+                    gameBoard[row - i][col] === player &&
+                    gameBoard[row - i + 1][col] === player &&
+                    gameBoard[row - i + 2][col] === player
+                ) {
+                    return true;
+                }
+            }
+            
+            // Проверка диагонали (слева-направо)
+            for (let i = 0; i <= 2; i++) {
+                if (
+                    row - i >= 0 && 
+                    row - i + 2 < 5 &&
+                    col - i >= 0 && 
+                    col - i + 2 < 5 &&
+                    gameBoard[row - i][col - i] === player &&
+                    gameBoard[row - i + 1][col - i + 1] === player &&
+                    gameBoard[row - i + 2][col - i + 2] === player
+                ) {
+                    return true;
+                }
+            }
+            
+            // Проверка диагонали (справа-налево)
+            for (let i = 0; i <= 2; i++) {
+                if (
+                    row - i >= 0 && 
+                    row - i + 2 < 5 &&
+                    col + i < 5 && 
+                    col + i - 2 >= 0 &&
+                    gameBoard[row - i][col + i] === player &&
+                    gameBoard[row - i + 1][col + i - 1] === player &&
+                    gameBoard[row - i + 2][col + i - 2] === player
+                ) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        // Проверка ничьей
+        function checkDraw() {
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 5; j++) {
+                    if (gameBoard[i][j] === '') {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        
+        // Обновление счета
+        function updateScore() {
+            if (currentPlayer === 'cat') {
+                catScore++;
+                catScoreElement.textContent = catScore;
+            } else {
+                dogScore++;
+                dogScoreElement.textContent = dogScore;
+            }
+        }
+        
+        // Начало нового раунда
+        function startNewRound() {
+            gameBoard = Array(5).fill().map(() => Array(5).fill(''));
+            currentPlayer = 'cat';
+            currentPlayerElement.textContent = '🐱';
+            gameActive = true;
+            round++;
+            roundElement.textContent = round;
+            initializeBoard();
+        }
+        
+        // Сброс игры
+        function resetGame() {
+            gameBoard = Array(5).fill().map(() => Array(5).fill(''));
+            currentPlayer = 'cat';
+            currentPlayerElement.textContent = '🐱';
+            gameActive = true;
+            round = 1;
+            roundElement.textContent = round;
+            catScore = 0;
+            dogScore = 0;
+            catScoreElement.textContent = catScore;
+            dogScoreElement.textContent = dogScore;
+            initializeBoard();
+        }
+        
+        // Инициализация игры
+        initializeBoard();
+        
+        // Обработчик кнопки сброса
+        resetButton.addEventListener('click', resetGame);
+    </script>
+</body>
+</html>
